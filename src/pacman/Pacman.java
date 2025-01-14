@@ -14,8 +14,16 @@ public class Pacman {
         rellenarTablero(tablero);
         mostrarTablero(tablero);
 
+    
+    
+    
     }
 
+    
+    
+    
+    
+    
     private static void mostrarTablero(String[][] tablero) {
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
@@ -30,7 +38,7 @@ public class Pacman {
         // Inicializa el tablero vacío con espacios
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                tablero[i][j] = " ";
+                tablero[i][j] = ".";
             }
         }
 
@@ -88,7 +96,7 @@ public class Pacman {
         // Verticales
         for (int i = 0; i < tablero.length; i++) {
             if ((i > 2 && i < 6) || (i > 6 && i < 11)) {
-                tablero[i][4] = "|";
+                tablero[i][5] = "|";
                 tablero[i][13] = "|";
             }
         }
