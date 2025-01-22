@@ -22,6 +22,13 @@ public class PacMan extends Thread {
             int [] posiciones = tablero.mover(getPersonaje(), getPosX(), getPosY());
             setPosY(posiciones[0]);
             setPosX(posiciones[1]);
+            
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
         }
     }
 

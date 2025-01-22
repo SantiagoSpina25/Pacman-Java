@@ -1,5 +1,6 @@
 package Main;
 
+import Modelo.Contador;
 import Modelo.Fantasma;
 import Modelo.PacMan;
 import Modelo.PedirDireccion;
@@ -50,15 +51,19 @@ public class Main {
         Fantasma fantasma2 = new Fantasma(tablero,9,7);
         Fantasma fantasma3 = new Fantasma(tablero, 10,7);
         Fantasma fantasma4 = new Fantasma(tablero,8,7);
-        PedirDireccion pedirDireccion = new PedirDireccion();
-        
+        PedirDireccion pedirDireccion = new PedirDireccion(tablero);
+        Contador contador = new Contador(tablero); 
+                
+        //Comienzo de los hilos
         pacMan.start();
+        
         fantasma1.start();
         fantasma2.start();
         fantasma3.start();
         fantasma4.start();
-        pedirDireccion.start();
         
+        pedirDireccion.start();
+        contador.start();
 
     }
 

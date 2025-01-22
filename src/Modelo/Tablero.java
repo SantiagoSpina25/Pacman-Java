@@ -12,115 +12,123 @@ public class Tablero {
     private String tablero[][] = new String[15][19];
     private int vidasRestantes;
     private int tiempoRestante;
-    private String direccion="d";
 
-   private final Semaphore semaforoTablero = new Semaphore(1);
+    private String direccionPacman = "DERECHA";
+
+    private final Semaphore semaforoTablero = new Semaphore(1);
 
     public Tablero(int vidasRestantes, int tiempoRestante) {
         this.vidasRestantes = vidasRestantes;
         this.tiempoRestante = tiempoRestante;
-        
+
         rellenarTablero();
     }
 
-    public int [] mover(String personaje, int posX, int posY) {
-        int [] posiciones = {posY, posX};
-        if (personaje.equals("F")) {
-            try {
-               semaforoTablero.acquire();
-                
+    public int[] mover(String personaje, int posX, int posY) {
+        int[] posiciones = {posY, posX};
+        try {
+            semaforoTablero.acquire();
+            if (personaje.equals("F")) {
                 int numRandom = (int) (Math.random() * 4);
 
                 switch (numRandom) {//Compruebo si se puede mover
                     case 0://Arriba
-                        if(tablero[posY-1][posX].equals(".")){
-                            tablero[posY-1][posX] = personaje;
+                        if (tablero[posY - 1][posX].equals(".")) {
+                            tablero[posY - 1][posX] = personaje;
                             tablero[posY][posX] = ".";
                             posY--;
-                         }
+                        }
                         break;
                     case 1://Derecha
-                        if(tablero[posY][posX+1].equals(".")){
-                            tablero[posY][posX+1] = personaje;
+                        if (tablero[posY][posX + 1].equals(".")) {
+                            tablero[posY][posX + 1] = personaje;
                             tablero[posY][posX] = ".";
                             posX++;
-                         }
+                        }
                         break;
                     case 2://Abajo
-                        if(tablero[posY+1][posX].equals(".")){
-                            tablero[posY+1][posX] = personaje;
+                        if (tablero[posY + 1][posX].equals(".")) {
+                            tablero[posY + 1][posX] = personaje;
                             tablero[posY][posX] = ".";
                             posY++;
-                         }
+                        }
                         break;
                     case 3://Izquierda
-                        if(tablero[posY][posX-1].equals(".")){
-                            tablero[posY][posX-1] = personaje;
+                        if (tablero[posY][posX - 1].equals(".")) {
+                            tablero[posY][posX - 1] = personaje;
                             tablero[posY][posX] = ".";
                             posX--;
-                         }
+                        }
                         break;
-                    
+
                 }
-                posiciones[0] = posY;
-                posiciones[1] = posX;
-                mostrarTablero();
-                semaforoTablero.release();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-            
-        }else{// Si es PACMAN
-            direccion = PedirDireccion.getDireccion();
-            
-            switch (direccion) {//Compruebo si se puede mover
-                    case "w"://Arriba
-                        if(tablero[posY-1][posX].equals(".")){
-                            tablero[posY-1][posX] = personaje;
+            } else {// Si es PACMAN
+                switch (direccionPacman) {//Compruebo si se puede mover
+                    case "ARRIBA"://Arriba
+                        if (tablero[posY - 1][posX].equals(".")) {
+                            tablero[posY - 1][posX] = personaje;
                             tablero[posY][posX] = ".";
                             posY--;
-                         }
+                        }
                         break;
-                    case "d"://Derecha
-                        if(tablero[posY][posX+1].equals(".")){
-                            tablero[posY][posX+1] = personaje;
+                    case "DERECHA"://Derecha
+                        if (tablero[posY][posX + 1].equals(".")) {
+                            tablero[posY][posX + 1] = personaje;
                             tablero[posY][posX] = ".";
                             posX++;
-                         }
+                        }
                         break;
-                    case "s"://Abajo
-                        if(tablero[posY+1][posX].equals(".")){
-                            tablero[posY+1][posX] = personaje;
+                    case "ABAJO"://Abajo
+                        if (tablero[posY + 1][posX].equals(".")) {
+                            tablero[posY + 1][posX] = personaje;
                             tablero[posY][posX] = ".";
                             posY++;
-                         }
+                        }
                         break;
-                    case "a"://Izquierda
-                        if(tablero[posY][posX-1].equals(".")){
-                            tablero[posY][posX-1] = personaje;
+                    case "IZQUIERDA"://Izquierda
+                        if (tablero[posY][posX - 1].equals(".")) {
+                            tablero[posY][posX - 1] = personaje;
                             tablero[posY][posX] = ".";
                             posX--;
-                         }
+                        }
                         break;
-                    
                 }
+            }
+            //Guarda las posiciones cambiadas en un array
+            posiciones[0] = posY;
+            posiciones[1] = posX;
             
+            //Actualizo el tiempo en el tablero
+            tablero[4][9] = String.valueOf(tiempoRestante);
+            
+            //Muestra el tablero actualizado y libera el tablero
+            mostrarTablero();
+            semaforoTablero.release();
+        } catch (Exception e) {
+            System.out.println(e);
         }
-        System.out.println(direccion);
         return posiciones;
+    }
+    
+    public void disminuirTiempo(){
+        if(tiempoRestante > 0){
+            tiempoRestante--;
+        }
+    }
+
+    public String getDireccionPacman() {
+        return direccionPacman;
+    }
+
+    public void setDireccionPacman(String direccionPacman) {
+        this.direccionPacman = direccionPacman;
     }
 
     public void mostrarTablero() {
         System.out.println("");
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                //Compruebo si encuentra un numero, que no guarde un espacio, sino se descuadra el tablero
-               // if(tablero[i][j].matches("-?\\d+(\\.\\d+)?")){
-                    //System.out.print(tablero[i][j]);
-                //}else{
-                    System.out.print(tablero[i][j] + " ");
-               // }
-                
+                System.out.print(tablero[i][j] + " ");
             }
             System.out.println();
         }
@@ -229,11 +237,11 @@ public class Tablero {
         tablero[7][0] = ".";
 
         //Muestro el tiempo restante
-        tablero[10][9] = String.valueOf(tiempoRestante);
-        
+        tablero[4][9] = String.valueOf(tiempoRestante);
+
         //Muestro las vidas restantes
-        tablero[4][9] = String.valueOf(vidasRestantes);
-        
+        tablero[10][9] = String.valueOf(vidasRestantes);
+
     }
-    
+
 }

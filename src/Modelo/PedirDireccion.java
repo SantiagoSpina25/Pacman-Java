@@ -8,26 +8,26 @@ import java.util.Scanner;
  */
 public class PedirDireccion extends Thread{
     
-    Scanner sc = new Scanner(System.in);
-    private static String direccion="d";
+    private Tablero tablero;
+    
+    public PedirDireccion(Tablero tablero){
+        this.tablero = tablero;
+    }
     
     @Override
     public void run() {
         while(true){
-            //Pide la direccion
-            String direccion = sc.next();
-            if(!isCorrecta(direccion)){
-                 direccion = "d";
+            Scanner sc = new Scanner(System.in);
+            //Pide la direccion, sino se indica ninguna, por defecto va a la derecha
+            String direccionIntroducida = sc.next().toUpperCase();
+            switch (direccionIntroducida) {
+                case "W": tablero.setDireccionPacman("ARRIBA"); break;
+                case "S": tablero.setDireccionPacman("ABAJO"); break;
+                case "A": tablero.setDireccionPacman("IZQUIERDA"); break;
+                case "D": tablero.setDireccionPacman("DERECHA"); break;
+                default: System.out.println("Entrada inválida, usa W/A/S/D.");
             }
         }
-    }
-    
-    public boolean isCorrecta(String direccion){
-        return (direccion.equalsIgnoreCase("w") || direccion.equalsIgnoreCase("a") || direccion.equalsIgnoreCase("s") || direccion.equalsIgnoreCase("d"));
-    }
-
-    public static String getDireccion() {
-        return direccion;
     }
     
 }
