@@ -1,6 +1,5 @@
 package Modelo;
 
-import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -14,7 +13,7 @@ public class Tablero {
     private int vidasRestantes;
     private int tiempoRestante;
 
-    private final Semaphore semaforoTablero = new Semaphore(1);
+   private final Semaphore semaforoTablero = new Semaphore(1);
 
     public Tablero(int vidasRestantes, int tiempoRestante) {
         this.vidasRestantes = vidasRestantes;
@@ -27,7 +26,7 @@ public class Tablero {
         int [] posiciones = {posY, posX};
         if (personaje.equals("F")) {
             try {
-                semaforoTablero.acquire();
+               semaforoTablero.acquire();
                 
                 int numRandom = (int) (Math.random() * 4);
 
@@ -64,14 +63,14 @@ public class Tablero {
                 }
                 posiciones[0] = posY;
                 posiciones[1] = posX;
-                
-                semaforoTablero.release();
                 mostrarTablero();
-            } catch (InterruptedException e) {
+                semaforoTablero.release();
+            } catch (Exception e) {
                 System.out.println(e);
             }
             
         }
+        
         return posiciones;
     }
 
@@ -79,15 +78,19 @@ public class Tablero {
         System.out.println("");
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
-                System.out.print(tablero[i][j] + " ");
+                //Compruebo si encuentra un numero, que no guarde un espacio, sino se descuadra el tablero
+               // if(tablero[i][j].matches("-?\\d+(\\.\\d+)?")){
+                    //System.out.print(tablero[i][j]);
+                //}else{
+                    System.out.print(tablero[i][j] + " ");
+               // }
+                
             }
             System.out.println();
         }
     }
 
     public void rellenarTablero() {
-        //Muestro el numero de tiempo restante
-        System.out.println("Tiempo restante: " + tiempoRestante);
 
         // Inicializa el tablero vacío con espacios
         for (int i = 0; i < tablero.length; i++) {
@@ -189,9 +192,12 @@ public class Tablero {
         //Huecos
         tablero[7][0] = ".";
 
-        //Muestro el numero de vidas restantes
+        //Muestro el tiempo restante
+        tablero[10][9] = String.valueOf(tiempoRestante);
+        
+        //Muestro las vidas restantes
         tablero[4][9] = String.valueOf(vidasRestantes);
-
+        
     }
     
 }

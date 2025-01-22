@@ -27,12 +27,12 @@ public class Main {
         switch (eleccion) {
             case 1:
                 vidasRestantes = 5;
-                tiempoRestante = 300;
+                tiempoRestante = 99;
                 System.out.println("\nDificultad facil elegida\n");
                 break;
             case 2:
                 vidasRestantes = 3;
-                tiempoRestante = 180;
+                tiempoRestante = 90;
                 System.out.println("\nDificultad normal elegida\n");
                 break;
             case 3:
@@ -45,14 +45,16 @@ public class Main {
         System.out.println("");
         Tablero tablero = new Tablero(vidasRestantes, tiempoRestante);
         PacMan pacMan = new PacMan(tablero);
-        Fantasma fantasma1 = new Fantasma(tablero, 6,9);
-        Fantasma fantasma2 = new Fantasma(tablero,7,9);
+        Fantasma fantasma1 = new Fantasma(tablero, 9,6);
+        Fantasma fantasma2 = new Fantasma(tablero,9,7);
+        Fantasma fantasma3 = new Fantasma(tablero, 10,7);
+        Fantasma fantasma4 = new Fantasma(tablero,8,7);
         
         //pacMan.start();
         fantasma1.start();
         fantasma2.start();
-        
-        tablero.mostrarTablero();
+        fantasma3.start();
+        fantasma4.start();
         
 
     }
