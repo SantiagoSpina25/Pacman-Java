@@ -2,6 +2,7 @@ package Main;
 
 import Modelo.Fantasma;
 import Modelo.PacMan;
+import Modelo.PedirDireccion;
 import Modelo.Tablero;
 import java.util.Scanner;
 
@@ -49,12 +50,14 @@ public class Main {
         Fantasma fantasma2 = new Fantasma(tablero,9,7);
         Fantasma fantasma3 = new Fantasma(tablero, 10,7);
         Fantasma fantasma4 = new Fantasma(tablero,8,7);
+        PedirDireccion pedirDireccion = new PedirDireccion();
         
-        //pacMan.start();
+        pacMan.start();
         fantasma1.start();
         fantasma2.start();
         fantasma3.start();
         fantasma4.start();
+        pedirDireccion.start();
         
 
     }

@@ -12,6 +12,7 @@ public class Tablero {
     private String tablero[][] = new String[15][19];
     private int vidasRestantes;
     private int tiempoRestante;
+    private String direccion="d";
 
    private final Semaphore semaforoTablero = new Semaphore(1);
 
@@ -69,8 +70,43 @@ public class Tablero {
                 System.out.println(e);
             }
             
+        }else{// Si es PACMAN
+            direccion = PedirDireccion.getDireccion();
+            
+            switch (direccion) {//Compruebo si se puede mover
+                    case "w"://Arriba
+                        if(tablero[posY-1][posX].equals(".")){
+                            tablero[posY-1][posX] = personaje;
+                            tablero[posY][posX] = ".";
+                            posY--;
+                         }
+                        break;
+                    case "d"://Derecha
+                        if(tablero[posY][posX+1].equals(".")){
+                            tablero[posY][posX+1] = personaje;
+                            tablero[posY][posX] = ".";
+                            posX++;
+                         }
+                        break;
+                    case "s"://Abajo
+                        if(tablero[posY+1][posX].equals(".")){
+                            tablero[posY+1][posX] = personaje;
+                            tablero[posY][posX] = ".";
+                            posY++;
+                         }
+                        break;
+                    case "a"://Izquierda
+                        if(tablero[posY][posX-1].equals(".")){
+                            tablero[posY][posX-1] = personaje;
+                            tablero[posY][posX] = ".";
+                            posX--;
+                         }
+                        break;
+                    
+                }
+            
         }
-        
+        System.out.println(direccion);
         return posiciones;
     }
 

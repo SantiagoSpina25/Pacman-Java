@@ -9,6 +9,7 @@ public class PacMan extends Thread {
     private Tablero tablero;
     private int posX = 9;
     private int posY = 9;
+    private String personaje = "P";
     
     public PacMan(Tablero tablero){
         this.tablero= tablero;
@@ -17,7 +18,10 @@ public class PacMan extends Thread {
     @Override
     public void run() {
         while(true){
-            tablero.mover("P", posX,posY);
+            //Al mover en el tablero, recibe la nueva posicion y lo actualiza
+            int [] posiciones = tablero.mover(getPersonaje(), getPosX(), getPosY());
+            setPosY(posiciones[0]);
+            setPosX(posiciones[1]);
         }
     }
 
@@ -35,6 +39,14 @@ public class PacMan extends Thread {
 
     public void setPosY(int posY) {
         this.posY = posY;
+    }
+
+    public String getPersonaje() {
+        return personaje;
+    }
+
+    public void setPersonaje(String personaje) {
+        this.personaje = personaje;
     }
     
     

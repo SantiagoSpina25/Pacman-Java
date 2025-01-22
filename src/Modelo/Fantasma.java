@@ -24,6 +24,7 @@ public class Fantasma extends Thread {
     @Override
     public void run() {
         while(true){
+            //Al mover en el tablero, recibe la nueva posicion y lo actualiza
             int [] posiciones = tablero.mover(getPersonaje(), getPosX(), getPosY());
             setPosY(posiciones[0]);
             setPosX(posiciones[1]);
