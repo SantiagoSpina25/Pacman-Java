@@ -81,6 +81,7 @@ public class Tablero {
                 nuevaPosX--;
                 break;
         }
+        System.out.println(nuevaPosX);
         //Compruebo si el nuevo movimiento es valido
         if (esMovimientoValido(nuevaPosY, nuevaPosX, "pacman")) {
             //Compruebo si recoge un objetivo (si es asi suma un objetivo a la variable)
@@ -88,6 +89,21 @@ public class Tablero {
                 objetivosRecogidos++;
             }
             //Limpio la casilla anterior y mueve al pacman
+            tablero[posY][posX] = " ";
+            tablero[nuevaPosY][nuevaPosX] = "P";
+            pacman.setPosX(nuevaPosX);
+            pacman.setPosY(nuevaPosY);
+        } else if (nuevaPosX > 18) {//En el caso que pase por el camino "ocuto" de la derecha
+            System.out.println("entro");
+            nuevaPosY = 7;
+            nuevaPosX = 0;
+            tablero[posY][posX] = " ";
+            tablero[nuevaPosY][nuevaPosX] = "P";
+            pacman.setPosX(nuevaPosX);
+            pacman.setPosY(nuevaPosY);
+        } else if (nuevaPosX < 0) {//En el caso que pase por el camino "ocuto" de la izquierda
+            nuevaPosY = 7;
+            nuevaPosX = 18;
             tablero[posY][posX] = " ";
             tablero[nuevaPosY][nuevaPosX] = "P";
             pacman.setPosX(nuevaPosX);
@@ -126,14 +142,15 @@ public class Tablero {
 
     private boolean esMovimientoValido(int y, int x, String personaje) {
         boolean esValido = false;
-        //Si el personaje es un fantasma y toca al pacman o viceversa, activa el metodo pacmanAtrapado
-        if ((personaje.equals("pacman") && tablero[y][x].equals("F"))) {
-            pacmanAtrapado();
-        } //Devuelve si el movimiento es valido si:
-        //No se pasa del tablero 
-        //Si la casilla a la que se mueve es un . o un "" o un O
-        else if ((x >= 0) && (x < tablero[0].length) && (y >= 0) && (y < tablero.length) && ((tablero[y][x].equals(".") || tablero[y][x].equals(" ") || tablero[y][x].equals("O")))) {
-            esValido = true;
+        if ((x >= 0) && (x < tablero[0].length) && (y >= 0) && (x < tablero[0].length) && (y < tablero.length)) {
+            //Si el personaje es un fantasma y toca al pacman o viceversa, activa el metodo pacmanAtrapado
+            if ((personaje.equals("pacman") && tablero[y][x].equals("F"))) {
+                pacmanAtrapado();
+            } //Devuelve si el movimiento es valido si:
+            //Si la casilla a la que se mueve es un . o un "" o un O
+            else if (((tablero[y][x].equals(".") || tablero[y][x].equals(" ") || tablero[y][x].equals("O")))) {
+                esValido = true;
+            }
         }
         return esValido;
 
@@ -272,6 +289,7 @@ public class Tablero {
 
         //Huecos
         tablero[7][0] = ".";
+        tablero[7][18] = ".";
 
         //Muestro el tiempo restante
         tablero[4][9] = String.valueOf(tiempoRestante);
