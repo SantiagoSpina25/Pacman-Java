@@ -16,7 +16,7 @@ public class PedirDireccion extends Thread{
     
     @Override
     public void run() {
-        while(true){
+        while(!tablero.juegoTerminado()){
             Scanner sc = new Scanner(System.in);
             //Pide la direccion, sino se indica ninguna, por defecto va a la derecha
             String direccionIntroducida = sc.next().toUpperCase();

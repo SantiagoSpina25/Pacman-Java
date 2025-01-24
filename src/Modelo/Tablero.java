@@ -1,5 +1,6 @@
 package Modelo;
 
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -12,106 +13,134 @@ public class Tablero {
     private String tablero[][] = new String[15][19];
     private int vidasRestantes;
     private int tiempoRestante;
+    private int objetivosRecogidos = 0;
+    private PacMan pacman;
 
     private String direccionPacman = "DERECHA";
 
     private final Semaphore semaforoTablero = new Semaphore(1);
 
-    public Tablero(int vidasRestantes, int tiempoRestante) {
+    public Tablero(int vidasRestantes, int tiempoRestante, PacMan pacman) {
         this.vidasRestantes = vidasRestantes;
         this.tiempoRestante = tiempoRestante;
+        this.pacman = pacman;
 
         rellenarTablero();
     }
 
-    public int[] mover(String personaje, int posX, int posY) {
-        int[] posiciones = {posY, posX};
+    //Este metodo mueve tanto a los fantasmas como al pacman y recibe por parametros un booleano (true si lo llama un fantasma y false si es el pacman)
+    public void mover(boolean esFantasma) {
         try {
             semaforoTablero.acquire();
-            if (personaje.equals("F")) {
-                int numRandom = (int) (Math.random() * 4);
 
-                switch (numRandom) {//Compruebo si se puede mover
-                    case 0://Arriba
-                        if (tablero[posY - 1][posX].equals(".")) {
-                            tablero[posY - 1][posX] = personaje;
-                            tablero[posY][posX] = ".";
-                            posY--;
+            if (esFantasma) {
+                // Si lo llama un fantasma mueve a todos los otros fantasmas a la vez buscandolos en la matriz
+                for (int i = 0; i < tablero.length; i++) {
+                    for (int j = 0; j < tablero[i].length; j++) {
+                        if (tablero[i][j].equals("F")) {
+                            moverFantasma(i, j);
                         }
-                        break;
-                    case 1://Derecha
-                        if (tablero[posY][posX + 1].equals(".")) {
-                            tablero[posY][posX + 1] = personaje;
-                            tablero[posY][posX] = ".";
-                            posX++;
-                        }
-                        break;
-                    case 2://Abajo
-                        if (tablero[posY + 1][posX].equals(".")) {
-                            tablero[posY + 1][posX] = personaje;
-                            tablero[posY][posX] = ".";
-                            posY++;
-                        }
-                        break;
-                    case 3://Izquierda
-                        if (tablero[posY][posX - 1].equals(".")) {
-                            tablero[posY][posX - 1] = personaje;
-                            tablero[posY][posX] = ".";
-                            posX--;
-                        }
-                        break;
-
+                    }
                 }
-            } else {// Si es PACMAN
-                switch (direccionPacman) {//Compruebo si se puede mover
-                    case "ARRIBA"://Arriba
-                        if (tablero[posY - 1][posX].equals(".")) {
-                            tablero[posY - 1][posX] = personaje;
-                            tablero[posY][posX] = ".";
-                            posY--;
-                        }
-                        break;
-                    case "DERECHA"://Derecha
-                        if (tablero[posY][posX + 1].equals(".")) {
-                            tablero[posY][posX + 1] = personaje;
-                            tablero[posY][posX] = ".";
-                            posX++;
-                        }
-                        break;
-                    case "ABAJO"://Abajo
-                        if (tablero[posY + 1][posX].equals(".")) {
-                            tablero[posY + 1][posX] = personaje;
-                            tablero[posY][posX] = ".";
-                            posY++;
-                        }
-                        break;
-                    case "IZQUIERDA"://Izquierda
-                        if (tablero[posY][posX - 1].equals(".")) {
-                            tablero[posY][posX - 1] = personaje;
-                            tablero[posY][posX] = ".";
-                            posX--;
-                        }
-                        break;
-                }
+            } else {
+                //Mueve al pacman
+                moverPacman();
             }
-            //Guarda las posiciones cambiadas en un array
-            posiciones[0] = posY;
-            posiciones[1] = posX;
-            
+
             //Actualizo el tiempo en el tablero
             tablero[4][9] = String.valueOf(tiempoRestante);
-            
-            //Muestra el tablero actualizado y libera el tablero
+
+            //Actualiza la pantalla
             mostrarTablero();
+
             semaforoTablero.release();
-        } catch (Exception e) {
+
+        } catch (InterruptedException e) {
             System.out.println(e);
         }
-        return posiciones;
     }
-    
-    public void disminuirTiempo(){
-        if(tiempoRestante > 0){
+
+    private void moverPacman() {
+        //Obtengo la posicion del pacman y creo una nueva variable para la nueva posicion
+        int posX = pacman.getPosX();
+        int posY = pacman.getPosY();
+        int nuevaPosX = posX;
+        int nuevaPosY = posY;
+
+        switch (direccionPacman) {
+            case "ARRIBA":
+                nuevaPosY--;
+                break;
+            case "DERECHA":
+                nuevaPosX++;
+                break;
+            case "ABAJO":
+                nuevaPosY++;
+                break;
+            case "IZQUIERDA":
+                nuevaPosX--;
+                break;
+        }
+        //Compruebo si el nuevo movimiento es valido
+        if (esMovimientoValido(nuevaPosY, nuevaPosX, "pacman")) {
+            //Compruebo si recoge un objetivo (si es asi suma un objetivo a la variable)
+            if (tablero[nuevaPosY][nuevaPosX].equals("O")) {
+                objetivosRecogidos++;
+            }
+            //Limpio la casilla anterior y mueve al pacman
+            tablero[posY][posX] = " ";
+            tablero[nuevaPosY][nuevaPosX] = "P";
+            pacman.setPosX(nuevaPosX);
+            pacman.setPosY(nuevaPosY);
+        }
+    }
+
+    private void moverFantasma(int posY, int posX) {
+        //Guardo los movimientos posibles en un arraylist y las direcciones en una matriz provisional
+        ArrayList<int[]> movimientosPosibles = new ArrayList<>();
+        int[][] direcciones = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+
+        //Guarda todos los movimientos
+        for (int[] dir : direcciones) {
+            int nuevaX = posX + dir[0];
+            int nuevaY = posY + dir[1];
+
+            // Verifica todas las posiciones y guarda las que son posibles
+            if (esMovimientoValido(nuevaY, nuevaX, "fantasma")) {
+                movimientosPosibles.add(new int[]{nuevaX, nuevaY});
+            }
+        }
+
+        //Si se puede realizar al menos un movimiento, se elije uno random del array
+        if (!movimientosPosibles.isEmpty()) {
+            int[] nuevaPos = movimientosPosibles.get((int) (Math.random() * movimientosPosibles.size()));
+
+            if (!tablero[nuevaPos[1]][nuevaPos[0]].equals("O")) {
+                //No moverse si hay un objetivo
+                // Actualiza el tablero: mueve el fantasma y deja el espacio como estaba
+                tablero[posY][posX] = ".";
+                tablero[nuevaPos[1]][nuevaPos[0]] = "F";
+            }
+        }
+    }
+
+    private boolean esMovimientoValido(int y, int x, String personaje) {
+        boolean esValido = false;
+        //Si el personaje es un fantasma y toca al pacman o viceversa, activa el metodo pacmanAtrapado
+        if ((personaje.equals("pacman") && tablero[y][x].equals("F"))) {
+            pacmanAtrapado();
+        } //Devuelve si el movimiento es valido si:
+        //No se pasa del tablero 
+        //Si la casilla a la que se mueve es un . o un "" o un O
+        else if ((x >= 0) && (x < tablero[0].length) && (y >= 0) && (y < tablero.length) && ((tablero[y][x].equals(".") || tablero[y][x].equals(" ") || tablero[y][x].equals("O")))) {
+            esValido = true;
+        }
+        return esValido;
+
+    }
+
+    public void disminuirTiempo() {
+        if (tiempoRestante > 0) {
             tiempoRestante--;
         }
     }
@@ -124,8 +153,16 @@ public class Tablero {
         this.direccionPacman = direccionPacman;
     }
 
+    public int getObjetivosRecogidos() {
+        return objetivosRecogidos;
+    }
+
+    public void setObjetivosRecogidos(int objetivosRecogidos) {
+        this.objetivosRecogidos = objetivosRecogidos;
+    }
+
     public void mostrarTablero() {
-        System.out.println("");
+        System.out.println("\n\n\n\n\n\n\n\n Objetivos restantes:  " + (4 - objetivosRecogidos) + "\n");
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero[i].length; j++) {
                 System.out.print(tablero[i][j] + " ");
@@ -244,4 +281,59 @@ public class Tablero {
 
     }
 
+    public boolean juegoTerminado() {
+        return ((tiempoRestante == 0) || (objetivosRecogidos == 4) || (vidasRestantes == 0));
+    }
+
+    private void pacmanAtrapado() {
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\nPACMAN FUE ATRAPADO. RESETEANDO LAS POSICIONES...\n\n\n\n\n\n\n\n\n\n");
+
+        //Pacman
+        tablero[pacman.getPosY()][pacman.getPosX()] = " ";
+        tablero[9][9] = "P";
+        pacman.setPosX(9);
+        pacman.setPosY(9);
+        //Reseto la direccion inicial a "derecha"
+        direccionPacman = "DERECHA";
+
+        //Fantasmas
+        //Busca los fantasmas y resetea su posicion
+        for (int i = 0; i < tablero.length; i++) {
+            for (int j = 0; j < tablero[i].length; j++) {
+                if (tablero[i][j].equals("F")) {
+                    tablero[i][j] = ".";
+                }
+            }
+        }
+
+        //Vuelvo a poner a los fantsmas en su posicion inicial
+        tablero[6][9] = "F";
+        for (int i = 0; i < tablero.length; i++) {
+            if (i > 7 && i < 11) {
+                tablero[7][i] = "F";
+            }
+        }
+
+        //Actualizo las vidas restantes
+        vidasRestantes--;
+        tablero[10][9] = String.valueOf(vidasRestantes);
+
+        //Si no perdio todas las vidas, vuelve a empezar
+        if (vidasRestantes > 0) {
+            try {
+                Thread.sleep(2000);
+                System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n 3 \n\n\n\n\n\n\n\n\n\n");
+                Thread.sleep(1000);
+                System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n 2 \n\n\n\n\n\n\n\n\n\n");
+                Thread.sleep(1000);
+                System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n 1 \n\n\n\n\n\n\n\n\n\n");
+                Thread.sleep(1000);
+                System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n START \n\n\n\n\n\n\n\n\n\n");
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

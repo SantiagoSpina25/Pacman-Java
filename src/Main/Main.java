@@ -1,7 +1,8 @@
 package Main;
 
 import Modelo.Contador;
-import Modelo.Fantasma;
+import Modelo.Fantasmas;
+import Modelo.Fantasmas;
 import Modelo.PacMan;
 import Modelo.PedirDireccion;
 import Modelo.Tablero;
@@ -45,28 +46,22 @@ public class Main {
 
         }
         System.out.println("");
-        Tablero tablero = new Tablero(vidasRestantes, tiempoRestante);
-        PacMan pacMan = new PacMan(tablero);
-        Fantasma fantasma1 = new Fantasma(tablero, 9,6);
-        Fantasma fantasma2 = new Fantasma(tablero,9,7);
-        Fantasma fantasma3 = new Fantasma(tablero, 10,7);
-        Fantasma fantasma4 = new Fantasma(tablero,8,7);
+        PacMan pacman = new PacMan(null); // Lo inicializo null para poder pasarselo al tablero primero
+        Tablero tablero = new Tablero(vidasRestantes, tiempoRestante, pacman);
+        pacman = new PacMan(tablero);
+        
+        Fantasmas fantasmas = new Fantasmas(tablero);
+        
         PedirDireccion pedirDireccion = new PedirDireccion(tablero);
         Contador contador = new Contador(tablero); 
                 
         //Comienzo de los hilos
-        pacMan.start();
+        pacman.start();
         
-        fantasma1.start();
-        fantasma2.start();
-        fantasma3.start();
-        fantasma4.start();
+        fantasmas.start();
         
         pedirDireccion.start();
         contador.start();
-
+        
     }
-
-    
-
 }

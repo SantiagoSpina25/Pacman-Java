@@ -10,26 +10,30 @@ public class PacMan extends Thread {
     private int posX = 9;
     private int posY = 9;
     private String personaje = "P";
-    
-    public PacMan(Tablero tablero){
-        this.tablero= tablero;
+
+    public PacMan(Tablero tablero) {
+        this.tablero = tablero;
     }
-    
+
     @Override
     public void run() {
-        while(true){
-            //Al mover en el tablero, recibe la nueva posicion y lo actualiza
-            int [] posiciones = tablero.mover(getPersonaje(), getPosX(), getPosY());
-            setPosY(posiciones[0]);
-            setPosX(posiciones[1]);
-            
+        while (!tablero.juegoTerminado()) {
+            tablero.mover(false);
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
         }
+
+        if (tablero.getObjetivosRecogidos() == 4) {
+            System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\nJUEGO TERMINADO, HAS RECOGIDO LOS 4 OBJETIVOS. GANASTE\n\n\n\n\n\n\n\n\n\n");
+        } else {
+            System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\nJUEGO TERMINADO, PERDISTE\n\n\n\n\n\n\n\n\n\n");
+        }
+        System.exit(0);
+
     }
 
     public int getPosX() {
@@ -55,6 +59,4 @@ public class PacMan extends Thread {
     public void setPersonaje(String personaje) {
         this.personaje = personaje;
     }
-    
-    
 }

@@ -13,7 +13,7 @@ public class Contador extends Thread{
 
     @Override
     public void run() {
-        while (true) {
+        while (!tablero.juegoTerminado()) {
             tablero.disminuirTiempo();
             try {
                 // Espera 1 segundo antes de restar tiempo nuevamente
