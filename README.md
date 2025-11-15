@@ -1,11 +1,11 @@
-# Pac-Man Java (inferred)
+# Pac-Man Java
 
-A Java implementation/simulation of Pac-Man with game loop, player controls, ghost enemies, a tile-based board, scoring, and basic collision logic. The project use plain Java (AWT/Swing) for rendering and input handling (inferred).
+An easy Java implementation/simulation of Pac-Man with game loop, player controls, ghost enemies, a tile-based board, scoring, and basic collision logic. The project use plain Java (AWT/Swing) for rendering and input handling.
 
 ## ✨ Features
 - Contains Pac-Man main game logic
 - Ghost (enemy) AI / movement
-- Score tracking and win/lose conditions (inferred).
+- Score tracking and win/lose conditions.
 - Keyboard input for player movement.
 - Basic ghost AI or movement patterns.
 
@@ -22,7 +22,7 @@ java -cp out Pacman-Java.src.Main.Main
 ```
 
 ## 🎮 Controls
-- Arrow keys or WASD to move Pac-Man (inferred from code naming conventions).
+- Arrow keys or WASD to move Pac-Man.
 
 ## 🛡️ License
 This project is distributed under the MIT license.
