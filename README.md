@@ -3,6 +3,7 @@
 An easy Java implementation/simulation of Pac-Man with game loop, player controls, ghost enemies, a tile-based board, scoring, and basic collision logic. The project use plain Java (AWT/Swing) for rendering and input handling.
 
 ## ✨ Features
+- Java 21
 - Contains Pac-Man main game logic
 - Ghost (enemy) AI / movement
 - Score tracking and win/lose conditions.
